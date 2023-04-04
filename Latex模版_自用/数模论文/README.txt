@@ -4,3 +4,5 @@
 
 mcode.sty使用方式和.cls文件 使用方式相同，将该文件放在被编译的文件夹下即可。
 使用方式和\usingpackage{} 方式相同
+
+测试latex上传在github网址的交互
