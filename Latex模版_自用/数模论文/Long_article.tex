@@ -1,0 +1,230 @@
+\documentclass[12pt, a4paper, oneside]{ctexart}
+\usepackage{amsmath, amsthm, amssymb, appendix, bm, fancyhdr, graphicx, geometry, mathrsfs, zhnumber}
+\usepackage[bookmarks=true, colorlinks, citecolor=black, linkcolor=black]{hyperref}
+\usepackage[framed, numbered, autolinebreaks, useliterate]{mcode}
+
+\linespread{1.2}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+
+\renewcommand{\thesection}{\zhnum{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
+\graphicspath{{./graphics/}}
+
+\begin{document}
+
+\pagestyle{empty}
+\setcounter{page}{0}
+
+\begin{center}
+    \Large{\textbf{PIV算法及其实现}}
+\end{center}
+
+\begin{center}
+    \Large{\textbf{摘要}}
+\end{center}
+
+本文介绍了PIV的发展历史、算法实现以及关键技术。
+
+\textbf{关键词：}PIV；速度场；算法；Lavision；TSI；Dantec；市场分析
+
+\newpage
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\pagestyle{plain}
+\fancyfoot[C]{\thepage}
+
+\section{PIV行业相关公司}
+
+PIV技术是一种用于流体力学领域的测量技术，具有广泛的应用前景。以下是几个提供PIV算法及相关产品和服务的公司：
+
+\subsection{问题背景}
+
+
+\begin{itemize}
+\item LaVision GmbH：LaVision是一家德国专注于流体力学实验和测量的公司，提供PIV算法及相关产品和服务，包括PIV软件、PIV相机、激光测距仪等。
+\item Dantec Dynamics：Dantec Dynamics是一家总部位于丹麦的公司，是一家流体力学实验和测量系统制造商，提供PIV测量系统、高速相机、激光测量仪、数据采集和分析软件等产品和服务。
+\item TSI Incorporated：TSI是一家总部位于美国的全球领先的测量仪器制造商，提供流体力学测量技术的产品和服务。其PIV系统包括PIV相机、激光器、图像处理软件等。
+\item Tofware LLC：Tofware是一家提供PIV软件和相关服务的美国公司，其PIV软件TOFPIV具有高效、准确、易用等特点。
+\item Vectrino：Vectrino是一家专注于水动力学研究和测量的公司，提供PIV测量系统、激光测量仪、高速相机等相关产品和服务。
+\item Oxford Lasers：Oxford Lasers是一家专注于激光测量和成像技术的公司，提供PIV测量系统、高速相机、激光测量仪等相关产品和服务。
+\end{itemize}
+以上仅是PIV算法和相关产品及服务提供商的几个例子，市场上还有很多其他的公司和产品。选择适合自己研究需求和实际应用的PIV技术供应商和产品，需要考虑诸多因素，包括价格、性能、技术支持等。
+
+
+PIVlab不是任何公司的产品，而是由荷兰代尔夫特理工大学（Delft University of Technology）流体力学实验室的Alex Liberzon博士开发的自由软件。PIVlab是一款基于Matlab的PIV图像处理软件，它提供了一个用户友好的界面，方便用户进行PIV图像的预处理、匹配、位移计算和流场可视化等操作。PIVlab还提供了一些特殊功能，如可微粒追踪技术（PTV）、自适应窗口和高级数据处理等。PIVlab的开源和免费性质使得它成为流体力学和相关领域研究人员的重要工具。
+
+PIVlab不属于任何公司，它是一个由德国斯图加特大学（University of Stuttgart）的流体力学研究团队开发的免费开源PIV软件。PIVlab支持多通道PIV、时间序列PIV、PIV-PTV混合技术和高级数据处理等功能，可以用于流体力学、生物医学、气象学和环境科学等领域的流场测量和分析。
+
+PIVlab软件由Alexander Liberzon和Rudolf Bannasch等人开发，他们也是PIV领域的知名专家和学者。PIVlab软件在全球范围内广泛使用，具有用户友好性、高精度和高可靠性等优点。因其开源和免费的特点，许多科研机构、大学和个人使用PIVlab进行流场测量和研究。
+% 编写该模板是为了应对接下来所面对的一切中文数学建模竞赛。
+
+LaVision是一家德国的高科技公司，专注于提供先进的光学测量技术解决方案。该公司成立于1989年，总部位于德国吕讷堡，并在美国、英国、法国、日本、中国等地设有分支机构。LaVision提供的产品和服务主要包括：
+
+\begin{itemize}
+    \item 流体力学测量系统：包括PIV系统、LDA系统、PTV系统、LDV系统、热成像系统等，可应用于空气动力学、水动力学、生物流体力学等领域的流场测量。
+    \item 光学表面测量系统：包括PSI系统、DIC系统、3D扫描系统等，可应用于材料力学、结构力学、生物医学等领域的表面形貌和形变测量。
+    \item 激光测量系统：包括激光示波器、激光干涉仪、激光雷达等，可应用于雷达遥感、激光制导、光学通信等领域的距离、速度、位置测量。
+    \item 数据分析软件：包括DaVis软件套件、IMAGER软件、INSIGHT4G软件等，提供PIV、PTV、LDA、DIC、PSI等多种测量和分析技术的软件支持。
+\end{itemize}
+
+
+LaVision的产品和服务广泛应用于航空航天、汽车工程、水利水电、生物医学等领域，具有高精度、高速度和高可靠性。
+
+LaVision在中国设有分支机构，名称为LaVision China，位于北京市海淀区清华科技园中科大厦。LaVision China是LaVision在中国的独立法人，主要负责销售、技术支持、售后服务和市场拓展等工作。
+
+LaVision China的业务范围包括流体力学测量系统、光学表面测量系统、激光测量系统、数据分析软件等。LaVision China拥有一支专业的技术团队，能够为用户提供全方位的技术支持和解决方案，包括设备安装、培训、校准、维护和升级等。此外，LaVision China还积极开展学术研究和技术交流活动，与国内外知名机构和专家保持密切合作，推动光学测量技术的发展和应用。
+
+% 众所周知，Word的公式排版奇丑无比，并且小节和公式的编号较为麻烦。
+% 相比之下，我更喜欢\LaTeX 干净简洁的风格。
+% 为了彻底摆脱Word，特地编写了该模板，用于接下来的各种竞赛。
+
+% \subsection{问题重述}
+\section{任务}
+
+\begin{itemize}
+    \item Lavision官网
+    \item Dantec官网
+    \item TSI官网
+    \item 北京立方天地，该公司代理上述三个公司的产品。
+\end{itemize}
+
+疑惑1:PIV设备购买之后使用生命周期为10年左右，如何在市场已经饱和的情况下再去开发和研究。
+\\ 我的理解：借着今年来国产化的趋势，在开源的基础上，做一套属于自己国家的有特殊用途的高精密软件。这个开发是有意义的，无论市场的饱和情况。
+
+疑惑2:开发的高精密软件，如何落地，被大家广泛使用。
+\\ 我的理解：在现有的市场下，大家都局限在使用现有的软件技术，说服用户去做软件升级不现实，中间加入的费用可能对处理结果的影响不是很巨大。这个苹果手机不一样，随便就更新换代。
+
+疑惑3:PIV的市场到底有多大？
+\\ 目前已知的高校，基本上都配备了PIV系统，并且目前看来没有更新换代的需求。没有新的市场机会。高校的市场已经结束。企业的机会我觉得还有。目前已知的BYD和美的在建设相关的风洞设备，其他企业应该也有。将来给企业高校做测量也是一个好市场。
+
+% 我们所需要解决的问题如下。
+% \begin{itemize}
+%     \item 制作出一个适用于中文建模竞赛的\LaTeX 模板；
+%     \item 在模板中，应当能够使用表格、图片、公式等对象。
+% \end{itemize}
+
+% \section{问题分析}
+
+% \subsection{问题1的分析}
+
+% 在这里写问题1的分析。
+
+% \subsection{问题2的分析}
+
+% 在这里写问题2的分析。
+
+% \section{模型准备}
+
+% \subsection{模型假设}
+
+% 为了建立模型，我们提出如下的假设。
+
+% \begin{enumerate}
+%     \item 这里是第一条假设。
+%     \\\textbf{理由：}这里是作出第一条假设的理由。
+%     \item 这里是第二条假设。
+%     \\\textbf{理由：}这里是作出第二条假设的理由。
+%     \item 这里是第三条假设。
+%     \\\textbf{理由：}这里是作出第三条假设的理由。
+%     \item 这里是第四条假设。
+%     \\\textbf{理由：}这里是作出第四条假设的理由。
+% \end{enumerate}
+
+% \subsection{符号说明}
+
+% 所使用的符号及说明如表\ref{table1}所示。
+
+% \begin{table}[h]
+%     \caption{符号说明}\label{table1}
+%     \centering
+%     \begin{tabular}{clc}
+%         \hline
+%         \textbf{符号} & \textbf{说明}        & \textbf{单位}   \\ \hline
+%         符号1         & 这里是符号1的说明。  & 单位             \\
+%         符号2         & 这里是符号2的说明。  & 单位             \\
+%         符号3         & 这里是符号3的说明。  & 单位             \\ \hline
+%     \end{tabular}
+% \end{table}
+
+% \section{模型的建立与求解}
+
+% \subsection{模型1}
+
+% 针对问题1，建立了模型1。
+
+% 其中，公式的书写方式如下。
+% \begin{equation}
+%     \label{eq1}
+%     {\rm{e}}^{i\theta}=\cos\theta+i\sin\theta.
+% \end{equation}
+% 公式\ref{eq1}就是大名鼎鼎的Euler公式。
+
+% \subsection{模型2}
+
+% 针对问题2，建立了模型2。
+
+% 在论文中可能需要插入图片，在这里插入图片的方式如下。
+
+% \begin{figure}[htbp]
+%     \centering
+%     \includegraphics[width=10cm]{1.png}
+%     \caption{微生物}\label{fig1}
+% \end{figure}
+
+% 图\ref{fig1}是在实验室中，科学家拿着微生物的照片。
+
+% \section{结果的分析与检验}
+
+% \subsection{问题的结果}
+
+% 在这里写问题的结果。
+
+% \subsection{模型的检验}
+
+% 在这里写对模型的检验。
+
+% \section{模型的优缺点分析}
+
+% \subsection{模型的优点}
+
+% 该模型具有如下的优点。
+% \begin{itemize}
+%     \item 优点1；
+%     \item 优点2；
+%     \item 优点3。
+% \end{itemize}
+
+% \subsection{模型的缺点与改进}
+
+% 与此同时，该模型也具有如下的缺点。
+% \begin{itemize}
+%     \item 缺点1；
+%     \item 缺点2。
+% \end{itemize}
+% 同时，在这里给出进一步优化模型的思路。
+
+% \begin{thebibliography}{99}
+%     \bibitem{a}作者. \emph{文献}[M]. 地点:出版社,年份.
+%     \bibitem{b}作者. \emph{文献}[M]. 地点:出版社,年份.
+% \end{thebibliography}
+
+% \begin{center}
+%     \Large{\textbf{附录}}
+% \end{center}
+
+% \begin{appendices}
+%     \renewcommand{\thesection}{\Alph{section}}
+%     \section{所用软件}
+%         论文使用\LaTeX 排版。
+%     \section{代码}
+%         所使用的代码如下。
+% \begin{lstlisting}
+%     Hello. 
+% \end{lstlisting}
+% \end{appendices}
+
+\end{document}
